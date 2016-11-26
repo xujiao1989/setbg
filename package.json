@@ -1,0 +1,50 @@
+{
+  "name": "fe-automation",
+  "version": "1.0.0",
+  "description": "learing-gulp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zwj2010hao/FE-Automation.git"
+  },
+  "author": "Gavin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zwj2010hao/FE-Automation/issues"
+  },
+  "homepage": "https://github.com/zwj2010hao/FE-Automation#readme",
+  "devDependencies": {
+    "browser-sync": "^2.13.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-csscomb": "^3.0.7",
+    "gulp-esformatter": "^6.0.0",
+    "gulp-import-css": "^0.1.2",
+    "gulp-insert": "^0.5.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-load-plugins": "^1.2.0",
+    "gulp-mock-server": "^1.1.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-sass": "^2.3.2",
+    "gulp-tmpl2js": "^0.1.1",
+    "gulp-util": "^3.0.7",
+    "gulp-wrap-amd": "^0.5.0",
+    "run-sequence": "^1.1.5",
+    "through2": "^2.0.1",
+    "velocity": "^0.7.2"
+  },
+  "dependencies": {
+    "amd-optimize": "^0.6.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-mock-server": "^1.1.2",
+    "gulp-plumber": "^1.1.0",
+    "gulp-uglify": "^2.0.0",
+    "lodash": "^4.17.2",
+    "merge-stream": "^1.0.1"
+  }
+}
