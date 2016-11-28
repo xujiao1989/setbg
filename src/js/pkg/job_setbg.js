@@ -17,7 +17,7 @@ require(['src/js/mod/setbg'],function(){
 			"type":1,
 			"closeCb":function(){
 				//关闭按钮的回调函数
-				alert("关闭回调函数")
+				console.log("关闭回调函数")
 			}
 		});
 

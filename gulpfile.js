@@ -3,8 +3,11 @@ const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs');
 const gutil = require('gulp-util');
+const clean = require('gulp-clean');
 const plugins = require('gulp-load-plugins')();
+const imagemin = require('gulp-imagemin');
 const buildTmpl = require('./tasks/buildTmpl');
+
 
 var _ = require('lodash');
 var merge = require('merge-stream');
@@ -14,30 +17,11 @@ var plumber = require('gulp-plumber');
 var uglify = require('gulp-uglify');
 
 const config = {
-  'dist': path.join(__dirname, 'dist'),
-  'src': path.join(__dirname, 'src'),
-  'task': path.join(__dirname, 'task')
+    'dist': path.join(__dirname, 'dist'),
+    'src': path.join(__dirname, 'src'),
+    'task': path.join(__dirname, 'task'),
+    'dev':path.join(__dirname,'dev')
 };
-
-gulp.task('sass', function () {
-  gulp.src(path.join(config.src,'sass','*.scss'))
-    .pipe(plugins.sass.sync().on('error', function (err) {
-      console.log(err)
-    }))
-    .pipe(plugins.autoprefixer([
-     'Chrome >= 20',
-     'Firefox >= 24',
-     'Explorer >= 6',
-     'Opera >= 12',
-     'Safari >= 6',
-      'iOS >= 6',
-      'Android 2.3',
-      'Android >= 4'
-     ]))
-    .pipe(plugins.importCss())
-    .pipe(plugins.csscomb())
-    .pipe(gulp.dest(path.join(config.src,'styles')))
-});
 
 gulp.task('tmpl2js', function () {
   var text = 'var templates = {};\r\n';
@@ -59,19 +43,19 @@ gulp.task('tmpl2js', function () {
         value: '    '
       }
     }))
-    .pipe(gulp.dest(path.join("D:/setbg/src/js/mod")))
+      .pipe(gulp.dest(path.join(config.src+"/js/mod")))
 });
-
 function compileScript(){
     var jsPkgMerge = merge();
-    var files = fs.readdirSync("./src/js/pkg");
+    var files = fs.readdirSync(config.src+"/js/pkg");
     _.forEach(files, function (value) {
         var mod = _.replace(value, '.js', '');
-        var stream = gulp.src("./src/js/pkg/*.js")
+        var stream = gulp.src(config.src+"/js/pkg/*.js")
             .pipe(plumber())
             .pipe(amdOpt(mod))
             .pipe(concat(value))
-            .pipe(gulp.dest("./dev/js"));
+            .pipe(clean({force: true}))
+            .pipe(gulp.dest(config.dev+"/js"));
         jsPkgMerge.add(stream);
     });
     return jsPkgMerge;
@@ -79,9 +63,17 @@ function compileScript(){
 gulp.task('compileJs',function(){
     compileScript();
 });
-gulp.task('start',['sass','tmpl2js','compileJs'],function () {
-  gulp.watch('src/styles/**/*.scss', ['sass']);
-  gulp.watch('src/tmpl/**/*.html', ['tmpl2js','compileJs']);
-    gulp.watch('src/js/mod/setbg.js', ['compileJs']);
-    gulp.watch('src/js/pkg/*.js', ['compileJs']);
+gulp.task('copyImg', function() {
+    return gulp.src(config.src+"/img/*.png")
+        .pipe(imagemin({optimizationLevel: 5}))
+        .pipe(gulp.dest(config.dev+"/img"));
+});
+gulp.task('copyHtml',function(){
+    return gulp.src(config.src+"/*.html")
+        .pipe(gulp.dest(config.dev));
+});
+
+gulp.task('start',['copyHtml','copyImg','tmpl2js','compileJs'],function () {
+    gulp.watch('src/tmpl/**/*.html', ['tmpl2js','compileJs']);
+    gulp.watch('src/js/**/*.js', ['compileJs']);
 });
