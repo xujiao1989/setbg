@@ -6,7 +6,7 @@
 
 setbg是一款弹窗插件，兼容IE7+以及其他主流浏览器。
 
-## setbg实现的功能
+## setbg使用方法
 
     /**
      * defaults:默认参数
@@ -47,7 +47,8 @@ setbg是一款弹窗插件，兼容IE7+以及其他主流浏览器。
    
     //使用方法
    
-    var html = '<div class="tips" style="width:550px;height: 100px; text-align: center;float:left">您已经发送过面试邀请！'
+    var html = '<div class="tips" style="width:550px;height: 100px; text-align: center;float:left">'
+    +'您已经发送过面试邀请！'
      +'<a href="javascript:void(0)" class="tipsBtn">提示按钮</a>'
      +'</div>';
 		setbg({
