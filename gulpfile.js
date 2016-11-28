@@ -43,6 +43,7 @@ gulp.task('tmpl2js', function () {
         value: '    '
       }
     }))
+      .pipe(uglify())
       .pipe(gulp.dest(path.join(config.src+"/js/mod")))
 });
 function compileScript(){
@@ -54,7 +55,7 @@ function compileScript(){
             .pipe(plumber())
             .pipe(amdOpt(mod))
             .pipe(concat(value))
-            .pipe(clean({force: true}))
+            .pipe(uglify())
             .pipe(gulp.dest(config.dev+"/js"));
         jsPkgMerge.add(stream);
     });
