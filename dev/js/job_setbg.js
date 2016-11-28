@@ -14,8 +14,8 @@ define('src/js/mod/setbg', ['src/js/mod/setbgdom'], function (setbgdom) {
         style: {
             pop_mask: 'width: 100%;  height: 100%;  position: fixed;  top: 0;  left: 0;  z-index: 9996;  background-color: #000;  opacity: .3;  filter: Alpha(Opacity=30); display: block;',
             pop_container: 'position: absolute;z-index: 9999;background: #fff;',
-            pop_title: 'display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:rgb(75, 145, 234);',
-            close_btn: 'line-height: 100px;display: block;float: right;overflow: hidden;width: 20px;height: 20px;margin: 7px 6px 0;background:#ccc'
+            pop_title: 'display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;',
+            close_btn: 'display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;'
         }
     };
     var popMethod = {
@@ -100,7 +100,7 @@ require(['src/js/mod/setbg'], function () {
             'html': html,
             'type': 1,
             'closeCb': function () {
-                alert('关闭回调函数');
+                console.log('关闭回调函数');
             }
         });
         $('body').on('click', '.tipsBtn', function (e) {
