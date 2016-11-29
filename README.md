@@ -61,3 +61,24 @@ setbg是一款弹窗插件，兼容IE7+以及其他主流浏览器。
 				console.log("关闭回调函数")
 			}
 		});
+
+## setbg优化
+
++ 2016/11/26
+  + 实现弹窗iframe+dom结构的兼容
+  + 实现样式可拓展
+  + 实现关闭函数可拓展（关闭回调）
+  + 基于underscore的弹窗模板生成
+
++ 2016/11/28
+  + 模板逻辑不多却要额外引入underscore，不划算，去模板，增加__initHtml方法初始化弹窗函数
+
++ 2016/11/29
+  + 修改参数拓展方法，由var option = $.extend({},defaults,opt)改成var option = $.extend(true,{},defaults,opt),
+
+           /*
+            * $.extend的第一个参数设置为true表示深度拓展，也就是对象中的对象也会被拓展
+            *   @ 如果opt.style={pop_title:"xxx"}如果不设置第一个参数为true，那么其他的pop_header等
+            *     样式属性都会被覆盖掉
+            * */
+

@@ -10,6 +10,10 @@ require(['src/js/pkg/setbg'],function(){
 			"width":500,
 			"html":html,
 			"type":1,
+			"style":{
+				"pop_header":"display: inline-block;width: 100%;height: 0;text-indent:10px;line-height: 36px;font-size: 0;margin: 0;background:#fff;position:relative",
+				"close_btn":"display: block;width: 20px;height: 20px;background: url(../img/closeX.png);line-height: 100px;overflow: hidden;margin: 8px;position:absolute;top:-50px;right:-100px;"
+			},
 			"closeCb":function(){
 				//关闭按钮的回调函数
 				console.log("关闭回调函数")
@@ -22,6 +26,6 @@ require(['src/js/pkg/setbg'],function(){
 				height:500
 			});
 			e.stopPropagation();
-		})
+		});
 	});
 });

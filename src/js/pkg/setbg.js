@@ -31,8 +31,9 @@ define([],function () {
         style: {
             pop_mask: "width: 100%;  height: 100%;  position: fixed;  top: 0;  left: 0;  z-index: 9996;  background-color: #000;  opacity: .3;  filter: Alpha(Opacity=30); display: block;",
             pop_container: "position: absolute;z-index: 9999;background: #fff;",
-            pop_title: "display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;color:#000;",
-            close_btn: "display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;"
+            pop_header: "display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;color:#000;",
+            close_btn: "display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;",
+            pop_title:"margin:0"
         }
     };
     var popMethod = {
@@ -41,7 +42,12 @@ define([],function () {
          * @__initPop:弹窗初始化
          */
         __initPop : function (opt) {
-            var option = $.extend({},defaults,opt),
+            /*
+            * $.extend的第一个参数设置为true表示深度拓展，也就是对象中的对象也会被拓展
+            *   @ 如果opt.style={pop_title:"xxx"}如果不设置第一个参数为true，那么其他的pop_header等
+            *     样式属性都会被覆盖掉
+            * */
+            var option = $.extend(true,{},defaults,opt),
                 html = this.__initHtml(option);
             $("body").append(html);
             this.__resizePop(option);
@@ -54,13 +60,13 @@ define([],function () {
         __initHtml:function(option){
             var style = option.style,
                 popMask = '<div class="pop_mask" style="'+style.pop_mask+'"></div>',
-                poptitle = (option.hasheader == 0) ? '<div class="pop_title" style="'+style.pop_title+'">' +
-                '<a href="javascript:void(0)" class="close_pop_btn" style="'+style.close_btn+'">关闭</a><p style="margin: 0">'+option.title+'</p>' +
+                popHead = (option.hasheader == 0) ? '<div class="pop_header" style="'+style.pop_header+'">' +
+                '<a href="javascript:void(0)" class="close_pop_btn" style="'+style.close_btn+'">关闭</a><p class="pop_title" style="'+style.pop_title+'">'+option.title+'</p>' +
                 '</div>' : '<iframe scrolling="no" id="setbg_iframe" src="'+option.url+'" frameborder="0" ></iframe></div></div>',
                 popContainer = '<div class="pop_container" style="'+style.pop_container+'">' +
                     '',
                 popMain = (option.type == "0") ? '<div class="pop_main_con" style="overflow: hidden"><iframe scrolling="no" id="setbg_iframe" src="'+option.url+'" frameborder="0" ></iframe></div></div>':'<div class="pop_main_con" style="overflow: hidden">'+option.html+'</div></div>';
-            return popMask+popContainer+poptitle+popMain;
+            return popMask+popContainer+popHead+popMain;
         },
         /**
          *
