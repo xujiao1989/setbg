@@ -30,7 +30,7 @@ define([],function () {
         title:"提示",
         style: {
             pop_mask: "width: 100%;  height: 100%;  position: fixed;  top: 0;  left: 0;  z-index: 9996;  background-color: #000;  opacity: .3;  filter: Alpha(Opacity=30); display: block;",
-            pop_container: "position: absolute;z-index: 9999;background: #fff;",
+            pop_container: "position: absolute;z-index: 9999;background: #fff;overflow:hidden",
             pop_header: "display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;color:#000;",
             close_btn: "display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;",
             pop_title:"margin:0"
@@ -65,7 +65,7 @@ define([],function () {
                 '</div>' : '<iframe scrolling="no" id="setbg_iframe" src="'+option.url+'" frameborder="0" ></iframe></div></div>',
                 popContainer = '<div class="pop_container" style="'+style.pop_container+'">' +
                     '',
-                popMain = (option.type == "0") ? '<div class="pop_main_con" style="overflow: hidden"><iframe scrolling="no" id="setbg_iframe" src="'+option.url+'" frameborder="0" ></iframe></div></div>':'<div class="pop_main_con" style="overflow: hidden">'+option.html+'</div></div>';
+                popMain = (option.type == "0") ? '<div class="pop_main_con" ><iframe scrolling="no" id="setbg_iframe" src="'+option.url+'" frameborder="0" ></iframe></div></div>':'<div class="pop_main_con" style="overflow: hidden">'+option.html+'</div></div>';
             return popMask+popContainer+popHead+popMain;
         },
         /**
@@ -99,35 +99,77 @@ define([],function () {
             var iframe = $("#setbg_iframe"),
                 self = this,
                 popCon =  $(".pop_main_con"),
-                winHeight = $(window).height();
+                popContainer = $(".pop_container"),
+                winWidth = parseInt($(window).width())-100,
+                winHeight = parseInt($(window).height())-80;
+
+            var _header = $(".pop_container .pop_header"),
+                _headerHeight = _header.height();
             if(iframe.length == "0"){
-                var width =  (option && option.width) ? option.width : 0,
-                    height = (option && option.height) ? option.height :0,
-                    conWidth = Math.max(width,popCon.width()),
-                    conHeight = Math.max(height,popCon.height());
-                $(".pop_container").css({
-                    "width":conWidth+"px",
-                    "height":(parseInt(conHeight)+40)+"px",
-                    "max-height":(parseInt(winHeight)-30)+"px"
+                /*
+                * 自己设置的dom结构不需要考虑太多，不像嵌入的iframe，谁知道样式是怎么写的
+                * */
+                var user_width =  (option && option.width) ? option.width : 0,//用户设置的宽度
+                    user_height = (option && option.height) ? option.height : 0,//用户设置的高度
+
+                    max_width = Math.max(popCon.width(),user_width),
+                    max_height = Math.max(popCon.height(),user_height);
+
+                    user_width = (max_width > winWidth) ? winWidth : max_width;//设置的宽度超过浏览器窗口宽度重置宽度
+                    user_height = (max_height > winHeight) ? winHeight : max_height;//设置的高度超过浏览器窗口高度重置高度
+
+
+                    var popContainWidth = user_width,
+                        popContainHeight = parseInt(user_height) + _headerHeight;
+                popCon.css({
+                    "width":user_width,
+                    "height":user_height
                 });
-                self.__relocatePop(conWidth,conHeight);
+                /*
+                 * 如果不给popContainer设置高宽，在IE7下有兼容性问题
+                 * */
+                popContainer.css({
+                    "width":popContainWidth,
+                    "height":popContainHeight
+                });
+                self.__relocatePop(popContainWidth,popContainHeight);
                 return;
             }
             iframe.on("load",function(){
-                var width = (option && option.width) ? option.width : iframe.contents().find("body").width(),
-                    height =(option && option.height) ? option.height :iframe.contents().find("body").height(),
-                    conWidth = width,
-                    conHeight = parseInt(height) + 30;
-                $(this).attr({
-                    "width":width+"px",
-                    "height":height+"px"
+                var userWidth = (option && option.width) ? option.width : 0,//初始化设置的宽度
+                    userHeight = (option && option.height) ? option.height : 0,//初始化设置的高度
+
+                    iframeWidth = iframe.contents().find("body").width(),//计算的iframe内容宽度
+                    iframeheight =iframe.contents().find("body").height();//计算的iframe内容的高度
+
+                    userWidth = (userWidth > winWidth) ? winWidth : userWidth;//设置的宽度超过浏览器窗口宽度重置宽度
+                    userHeight = (userHeight > winHeight) ? winHeight : userHeight;//设置的高度超过浏览器窗口高度重置高度
+
+                popCon.css({
+                    "width":iframeWidth,
+                    "height":iframeheight,
+                    "min-width":userWidth,
+                    "min-height":userHeight,
+                    "max-width":parseInt(winWidth)-100,
+                    "max-height":parseInt(winHeight)-100,
+                    "overflow":"hidden"
                 });
-                $(".pop_container").css({
-                    "width":conWidth+"px",
-                    "height":conHeight+"px",
-                    "max-height":(parseInt(winHeight)-30)+"px"
+                $(this).css({
+                    "width":"100%",
+                    "height":"100%"
                 });
-                self.__relocatePop(conWidth,conHeight);
+
+                var pop_ContainWidth = userWidth,
+                    pop_ContainHeight = parseInt(userHeight) + _headerHeight;
+                popCon.css({
+                    "width":userWidth,
+                    "height":userHeight
+                });
+                popContainer.css({
+                    "width":pop_ContainWidth,
+                    "height":pop_ContainHeight
+                });
+                self.__relocatePop(pop_ContainWidth,pop_ContainHeight);
             });
         },
         /**
