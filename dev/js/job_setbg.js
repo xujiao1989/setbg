@@ -1,1 +1,135 @@
-define("src/js/pkg/setbg",[],function(){function t(t){e.__destroyPop(t),e.__initPop(t)}var i={hasheader:0,title:"提示",style:{pop_mask:"width: 100%;  height: 100%;  position: fixed;  top: 0;  left: 0;  z-index: 9996;  background-color: #000;  opacity: .3;  filter: Alpha(Opacity=30); display: block;",pop_container:"position: absolute;z-index: 9999;background: #fff;overflow:hidden",pop_header:"display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;color:#000;",close_btn:"display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;",pop_title:"margin:0"}},e={__initPop:function(t){var e=$.extend(!0,{},i,t),o=this.__initHtml(e);$("body").append(o),this.__resizePop(e),this.__eventInit(e)},__initHtml:function(t){var i=t.style,e='<div class="pop_mask" style="'+i.pop_mask+'"></div>',o=0==t.hasheader?'<div class="pop_header" style="'+i.pop_header+'"><a href="javascript:void(0)" class="close_pop_btn" style="'+i.close_btn+'">关闭</a><p class="pop_title" style="'+i.pop_title+'">'+t.title+"</p></div>":'<iframe scrolling="no" id="setbg_iframe" src="'+t.url+'" frameborder="0" ></iframe></div></div>',n='<div class="pop_container" style="'+i.pop_container+'">',p="0"==t.type?'<div class="pop_main_con" ><iframe scrolling="no" id="setbg_iframe" src="'+t.url+'" frameborder="0" ></iframe></div></div>':'<div class="pop_main_con" style="overflow: hidden">'+t.html+"</div></div>";return e+n+o+p},__showPop:function(){$(".pop_mask,.pop_container").css({display:"block"})},__closePop:function(t){var i=t.closeCb;$(".pop_mask,.pop_container").css({display:"none"}),i&&"[object Function]"===Object.prototype.toString.call(i)&&i()},__resizePop:function(t){var i=$("#setbg_iframe"),e=this,o=$(".pop_main_con"),n=$(".pop_container"),p=parseInt($(window).width())-100,s=parseInt($(window).height())-80,h=$(".pop_container .pop_header"),a=h.height();if("0"==i.length){var r=t&&t.width?t.width:0,d=t&&t.height?t.height:0,c=Math.max(o.width(),r),l=Math.max(o.height(),d);r=c>p?p:c,d=l>s?s:l;var _=r,g=parseInt(d)+a;return o.css({width:r,height:d}),n.css({width:_,height:g}),void e.__relocatePop(_,g)}i.on("load",function(){var h=t&&t.width?t.width:0,r=t&&t.height?t.height:0,d=i.contents().find("body").width(),c=i.contents().find("body").height();h=h>p?p:h,r=r>s?s:r,o.css({width:d,height:c,"min-width":h,"min-height":r,"max-width":parseInt(p)-100,"max-height":parseInt(s)-100,overflow:"hidden"}),$(this).css({width:"100%",height:"100%"});var l=h,_=parseInt(r)+a;o.css({width:h,height:r}),n.css({width:l,height:_}),e.__relocatePop(l,_)})},__relocatePop:function(t,i){var e=$(window).width(),o=$(window).height(),n=(o-i)/2,p=(e-t)/2;$(".pop_container").css({position:"fixed",top:n+"px",left:p+"px"})},__destroyPop:function(t){$(".pop_mask").remove(),$(".pop_container").remove()},__eventInit:function(t){var i=$(".close_pop_btn"),e=this;i.on("click",function(){e.__closePop(t)})}};window.setbg=t,window.popMethod=e}),require(["src/js/pkg/setbg"],function(){$(document).ready(function(){var t='<div class="tips" style="width:550px;height:100px;text-align: center;float: left">您已经发送过面试邀请！<a href="javascript:void(0)" class="tipsBtn">提示按钮</a></div>';setbg({width:500,height:15,html:t,type:1,closeCb:function(){console.log("关闭回调函数")}}),$("body").on("click",".tipsBtn",function(t){popMethod.__resizePop({width:500,height:500}),t.stopPropagation()}),setbg({width:500,height:400,type:0,url:"/setbgdemo.html"})})}),define("job_setbg",["src/js/pkg/setbg"],function(){});
+define('src/js/pkg/setbg', [], function () {
+    var defaults = {
+        width: 100,
+        height: 100,
+        hasheader: 0,
+        title: '提示',
+        style: {
+            pop_mask: 'width: 100%;  height: 100%;  position: fixed;  top: 0;  left: 0;  z-index: 9996;  background-color: #000;  opacity: .3;  filter: Alpha(Opacity=30); display: block;',
+            pop_container: 'position: absolute;z-index: 9999;background: #fff;overflow:hidden',
+            pop_header: 'display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;color:#000;',
+            close_btn: 'display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;',
+            pop_title: 'margin:0'
+        }
+    };
+    var popMethod = {
+        __initPop: function (opt) {
+            var option = $.extend(true, {}, defaults, opt), html = this.__initHtml(option);
+            $('body').append(html);
+            this.__initPopSize(option);
+            this.__eventInit(option);
+        },
+        __initHtml: function (option) {
+            var style = option.style, popMask = '<div class="pop_mask" style="' + style.pop_mask + '"></div>', popHead = option.hasheader == 0 ? '<div class="pop_header" style="' + style.pop_header + '">' + '<a href="javascript:void(0)" class="close_pop_btn" style="' + style.close_btn + '">关闭</a><p class="pop_title" style="' + style.pop_title + '">' + option.title + '</p>' + '</div>' : '<iframe scrolling="no" id="setbg_iframe" src="' + option.url + '" frameborder="0" ></iframe></div></div>', popContainer = '<div class="pop_container" style="' + style.pop_container + '">' + '', popMain = option.type == '0' ? '<div class="pop_main_con" ><iframe scrolling="no" id="setbg_iframe" src="' + option.url + '" frameborder="0" ></iframe></div></div>' : '<div class="pop_main_con" style="overflow: hidden">' + option.html + '</div></div>';
+            return popMask + popContainer + popHead + popMain;
+        },
+        __showPop: function () {
+            $('.pop_mask,.pop_container').css({ 'display': 'block' });
+        },
+        __closePop: function (option) {
+            var closeCb = option.closeCb;
+            $('.pop_mask,.pop_container').css({ 'display': 'none' });
+            if (closeCb && Object.prototype.toString.call(closeCb) === '[object Function]') {
+                closeCb();
+            }
+        },
+        __resizePop: function (opt) {
+            var self = this, _header = $('.pop_container .pop_header'), popCon = $('.pop_main_con'), popContainer = $('.pop_container'), _headerHeight = _header.height(), width = opt.width, height = opt.height, minWidth = opt.type == 0 ? opt.minWidth : '', minHeight = opt.type == 0 ? opt.minHeight : '', winWidth = parseInt($(window).width()) - 100, winHeight = parseInt($(window).height()) - 100;
+            var popContainWidth = popCon.width(), popContainHeight = parseInt(_headerHeight) + height;
+            popCon.css({
+                'width': width + 'px',
+                'height': height + 'px',
+                'min-width': minWidth + 'px',
+                'min-height': minHeight + 'px',
+                'max-width': winWidth + 'px',
+                'max-height': winHeight + 'px',
+                'overflow': 'hidden'
+            });
+            popContainer.css({
+                'width': popContainWidth + 'px',
+                'height': popContainHeight + 'px'
+            });
+            self.__relocatePop(popContainWidth, popContainHeight);
+        },
+        __initPopSize: function (option) {
+            var iframe = $('#setbg_iframe'), self = this, popCon = $('.pop_main_con'), userHeight = option.height, userWidth = option.width;
+            var optInit = {
+                'width': userWidth,
+                'height': userHeight,
+                'type': 1
+            };
+            debugger;
+            self.__resizePop(optInit);
+            if (iframe.length == '0') {
+                var max_width = Math.max(popCon.width(), userWidth), max_height = Math.max(popCon.height(), userHeight);
+                var opt1 = {
+                    'width': max_width,
+                    'height': max_height,
+                    'type': 1
+                };
+                self.__resizePop(opt1);
+                return;
+            }
+            iframe.on('load', function () {
+                var iframeWidth = iframe.contents().find('body').width(), iframeheight = iframe.contents().find('body').height();
+                var optIframe = {
+                    'width': iframeWidth,
+                    'height': iframeheight,
+                    'minWidth': userWidth,
+                    'minHeight': userHeight,
+                    'type': 0
+                };
+                self.__resizePop(optIframe);
+                $(this).css({
+                    'width': '100%',
+                    'height': '100%'
+                });
+            });
+        },
+        __relocatePop: function (conWidth, conHeight) {
+            var winWidth = $(window).width(), winHeight = $(window).height(), posTop = (winHeight - conHeight) / 2, popLeft = (winWidth - conWidth) / 2;
+            $('.pop_container').css({
+                position: 'fixed',
+                top: posTop + 'px',
+                left: popLeft + 'px'
+            });
+        },
+        __destroyPop: function (option) {
+            $('.pop_mask').remove();
+            $('.pop_container').remove();
+        },
+        __eventInit: function (option) {
+            var closeBtn = $('.close_pop_btn'), self = this;
+            closeBtn.on('click', function () {
+                self.__closePop(option);
+            });
+        }
+    };
+    function setbg(opt) {
+        popMethod.__destroyPop(opt);
+        popMethod.__initPop(opt);
+    }
+    window.setbg = setbg;
+    window.popMethod = popMethod;
+});
+require(['src/js/pkg/setbg'], function () {
+    $(document).ready(function () {
+        var html = '<div class="tips" style="width:550px;height:100px;text-align: center;float: left">您已经发送过面试邀请\uFF01' + '<a href="javascript:void(0)" class="tipsBtn">提示按钮</a>' + '</div>';
+        $('body').on('click', '.tipsBtn', function (e) {
+            popMethod.__resizePop({
+                width: 500,
+                height: 500
+            });
+            e.stopPropagation();
+        });
+        setbg({
+            width: 500,
+            height: 400,
+            type: 0,
+            url: '/setbgdemo.html'
+        });
+    });
+});
+define('job_setbg', ['src/js/pkg/setbg'], function () {
+    return;
+});

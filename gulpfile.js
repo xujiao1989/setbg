@@ -55,7 +55,6 @@ function compileScript(){
             .pipe(plumber())
             .pipe(amdOpt(mod))
             .pipe(concat(value))
-            .pipe(uglify())
             .pipe(gulp.dest(config.dev+"/js"));
         jsPkgMerge.add(stream);
     });
