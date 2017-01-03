@@ -8,7 +8,7 @@ define('src/js/pkg/setbg', [], function () {
             pop_mask: 'width: 100%;  height: 100%;  position: fixed;  top: 0;  left: 0;  z-index: 9996;  background-color: #000;  opacity: .3;  filter: Alpha(Opacity=30); display: block;',
             pop_container: 'position: absolute;z-index: 9999;background: #fff;overflow:hidden',
             pop_header: 'display: inline-block;width: 100%;height: 36px;text-indent:10px;line-height: 36px;font-size: 14px;font-weight: bold;color:#000;margin: 0;border-bottom:1px solid rgb(199, 199, 199);background:#f5f5f5;color:#000;',
-            close_btn: 'display: block;width: 20px;height: 20px;background: url(../img/close.png);line-height: 100px;overflow: hidden;margin: 8px;float: right;',
+            close_btn: 'display: block;width: 20px;height: 20px;background: url(//img.58cdn.com.cn/job/pc/full/detail/img/close.png?v=1);line-height: 100px;overflow: hidden;margin: 8px;float: right;',
             pop_title: 'margin:0'
         }
     };
@@ -20,7 +20,7 @@ define('src/js/pkg/setbg', [], function () {
             this.__eventInit(option);
         },
         __initHtml: function (option) {
-            var style = option.style, popMask = '<div class="pop_mask" style="' + style.pop_mask + '"></div>', popHead = option.hasheader == 0 ? '<div class="pop_header" style="' + style.pop_header + '">' + '<a href="javascript:void(0)" class="close_pop_btn" style="' + style.close_btn + '">关闭</a><p class="pop_title" style="' + style.pop_title + '">' + option.title + '</p>' + '</div>' : '<iframe scrolling="no" id="setbg_iframe" src="' + option.url + '" frameborder="0" ></iframe></div></div>', popContainer = '<div class="pop_container" style="' + style.pop_container + '">' + '', popMain = option.type == '0' ? '<div class="pop_main_con" ><iframe scrolling="no" id="setbg_iframe" src="' + option.url + '" frameborder="0" ></iframe></div></div>' : '<div class="pop_main_con" style="overflow: hidden">' + option.html + '</div></div>';
+            var style = option.style, popMask = '<div class="pop_mask" style="' + style.pop_mask + '"></div>', popHead = option.hasheader == 0 ? '<div class="pop_header" style="' + style.pop_header + '">' + '<a href="javascript:void(0)" class="close_pop_btn" style="' + style.close_btn + '">关闭</a>' + '<p class="pop_title" style="' + style.pop_title + '">' + option.title + '</p>' + '</div>' : '', popContainer = '<div class="pop_container" style="' + style.pop_container + '">' + '', popMain = option.type == '0' ? '<div class="pop_main_con" ><iframe scrolling="no" id="setbg_iframe" src="' + option.url + '" frameborder="0" ></iframe></div></div>' : '<div class="pop_main_con" style="overflow: hidden">' + option.html + '</div></div>';
             return popMask + popContainer + popHead + popMain;
         },
         __showPop: function () {
@@ -34,8 +34,8 @@ define('src/js/pkg/setbg', [], function () {
             }
         },
         __resizePop: function (opt) {
-            var self = this, _header = $('.pop_container .pop_header'), popCon = $('.pop_main_con'), popContainer = $('.pop_container'), _headerHeight = _header.height(), width = opt.width, height = opt.height, minWidth = opt.type == 0 ? opt.minWidth : '', minHeight = opt.type == 0 ? opt.minHeight : '', winWidth = parseInt($(window).width()) - 100, winHeight = parseInt($(window).height()) - 100;
-            var popContainWidth = popCon.width(), popContainHeight = parseInt(_headerHeight) + height;
+            var self = this, _header = $('.pop_container .pop_header'), popCon = $('.pop_main_con'), popContainer = $('.pop_container'), _headerHeight = _header && _header.height() ? _header.height() : 0, width = opt.width, height = opt.height, minWidth = opt.type == 0 ? opt.minWidth : '', minHeight = opt.type == 0 ? opt.minHeight : '', winWidth = parseInt($(window).width()) - 100, winHeight = parseInt($(window).height()) - 100;
+            var popContainWidth = Math.max(popCon.width(), width), popContainHeight = parseInt(_headerHeight) + height;
             popCon.css({
                 'width': width + 'px',
                 'height': height + 'px',
@@ -52,26 +52,23 @@ define('src/js/pkg/setbg', [], function () {
             self.__relocatePop(popContainWidth, popContainHeight);
         },
         __initPopSize: function (option) {
-            var iframe = $('#setbg_iframe'), self = this, popCon = $('.pop_main_con'), userHeight = option.height, userWidth = option.width;
-            var optInit = {
-                'width': userWidth,
-                'height': userHeight,
+            var type = option.type, iframe = $('#setbg_iframe'), self = this, popCon = $('.pop_main_con'), userHeight = option.height, userWidth = option.width;
+            var max_width = Math.max(popCon.width(), userWidth), max_height = Math.max(popCon.height(), userHeight);
+            var opt1 = {
+                'width': max_width,
+                'height': max_height,
                 'type': 1
             };
-            debugger;
-            self.__resizePop(optInit);
-            if (iframe.length == '0') {
-                var max_width = Math.max(popCon.width(), userWidth), max_height = Math.max(popCon.height(), userHeight);
-                var opt1 = {
-                    'width': max_width,
-                    'height': max_height,
-                    'type': 1
-                };
-                self.__resizePop(opt1);
+            self.__resizePop(opt1);
+            if (type == '1') {
                 return;
             }
+            iframe.css({
+                'width': '100%',
+                'height': '100%'
+            });
             iframe.on('load', function () {
-                var iframeWidth = iframe.contents().find('body').width(), iframeheight = iframe.contents().find('body').height();
+                var iframeWidth = Math.max(iframe.contents().find('body').width(), iframe.contents().find('html').width()), iframeheight = Math.max(iframe.contents().find('body').height(), iframe.contents().find('html').height());
                 var optIframe = {
                     'width': iframeWidth,
                     'height': iframeheight,
@@ -80,10 +77,6 @@ define('src/js/pkg/setbg', [], function () {
                     'type': 0
                 };
                 self.__resizePop(optIframe);
-                $(this).css({
-                    'width': '100%',
-                    'height': '100%'
-                });
             });
         },
         __relocatePop: function (conWidth, conHeight) {
@@ -94,7 +87,7 @@ define('src/js/pkg/setbg', [], function () {
                 left: popLeft + 'px'
             });
         },
-        __destroyPop: function (option) {
+        __destroyPop: function () {
             $('.pop_mask').remove();
             $('.pop_container').remove();
         },
@@ -111,22 +104,30 @@ define('src/js/pkg/setbg', [], function () {
     }
     window.setbg = setbg;
     window.popMethod = popMethod;
+    return {
+        'setbg': setbg,
+        'popMethod': popMethod
+    };
 });
 require(['src/js/pkg/setbg'], function () {
     $(document).ready(function () {
         var html = '<div class="tips" style="width:550px;height:100px;text-align: center;float: left">您已经发送过面试邀请\uFF01' + '<a href="javascript:void(0)" class="tipsBtn">提示按钮</a>' + '</div>';
+        setbg({
+            'width': 550,
+            'height': 100,
+            'html': html,
+            'type': 1,
+            'hasheader': 1,
+            'closeCb': function () {
+                console.log('关闭回调函数');
+            }
+        });
         $('body').on('click', '.tipsBtn', function (e) {
             popMethod.__resizePop({
                 width: 500,
                 height: 500
             });
             e.stopPropagation();
-        });
-        setbg({
-            width: 500,
-            height: 400,
-            type: 0,
-            url: '/setbgdemo.html'
         });
     });
 });
